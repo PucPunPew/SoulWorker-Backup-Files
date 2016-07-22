@@ -1,4 +1,4 @@
-# This is file(s) from 1.5.0.6 v1.5.0.8 update:
+# This is file(s) from 1.5.0.6 to 1.5.0.8 update:
 
 Base.dll
 
