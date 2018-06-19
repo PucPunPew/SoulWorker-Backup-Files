@@ -58,10 +58,12 @@
             theline.appendChild(document.createElement("br"));
             //articleDom.parentElement.insertBefore(theline, articleDom);
             [{
-                name: "Zip",
+                name: "Ugoira",
+                fallbackName: "Zip",
                 data: ugoiraMeta.body.src
             }, {
-                name: "ZipHQ",
+                name: "HQ-Ugoira",
+                fallbackName: "ZipHQ",
                 data: ugoiraMeta.body.originalSrc
             }].forEach(function (value) {
                 var elem, elemtxt, click, innerelem;
@@ -74,7 +76,7 @@
                     var basename = ugoiraInfo.illustId + "_" + ugoiraInfo.illustTitle.replace(/[\\/:*?"<>|\u00b7]/g, "");
                     var savename = basename + value.name + ".ugoira";
                     if (typeof Blob === "undefined") {
-                        elemtxt.nodeValue = " >Save " + value.name + "< ";
+                        elemtxt.nodeValue = " >Save " + value.fallbackName + "< ";
                         elem.href = value.data;
                         elem.download = savename;
                     } else {
