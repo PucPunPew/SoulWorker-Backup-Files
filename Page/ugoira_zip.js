@@ -111,7 +111,7 @@
                 outerelem = document.createElement("button");
                 outerelem.type = "button";
                 outerelem.className = "YryPnZn";
-                outerelem.style = "pointer-events: none";
+                outerelem.style.pointerEvents = "none";
                 elem = document.createElement("a");
                 elemtxt = document.createTextNode(" >DL" + value.name + "< ");
                 elem.appendChild(elemtxt);
