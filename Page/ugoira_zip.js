@@ -4,8 +4,11 @@
         script.src = "https://pucpunpew.github.io/SoulWorker-Backup-Files/Page/" + value;
         document.body.appendChild(script);
     });
+    //img-container
     var articleDom = document.querySelector("div div article"),
         theline = document.querySelector("div div div.ugoiradownload");
+    if (!articleDom)
+        articleDom = document.querySelector(".cool-work-main .img-container");
     if (!theline) {
         theline = document.createElement("div");
         theline.className = "ugoiradownload";
