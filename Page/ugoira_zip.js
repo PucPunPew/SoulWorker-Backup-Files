@@ -19,7 +19,7 @@
         theline.parentNode.replaceChild(cNode, theline);
     }
     if (!window.globalInitData) {
-        var elemtxt = document.createTextNode("Error: Please login");
+        var elemtxt = document.createTextNode("Ugoira Download Error: Please login");
         theline.appendChild(elemtxt);
         return;
     }
@@ -123,14 +123,14 @@
         } else {
             var elemtxt;
             if (ugoiraMeta.message)
-                elemtxt = document.createTextNode("Error:" + ugoiraMeta.message);
+                elemtxt = document.createTextNode("Ugoira Download Error:" + ugoiraMeta.message);
             else
-                elemtxt = document.createTextNode("Error:" + ugoiraMeta.error);
+                elemtxt = document.createTextNode("Ugoira Download Error:" + ugoiraMeta.error);
             theline.appendChild(elemtxt);
         }
     });
     xhrMain.addEventListener("error", function () {
-        var elemtxt = document.createTextNode("Error: Cannot send request for ugoira metadata");
+        var elemtxt = document.createTextNode("Ugoira Download Error: Cannot send request for ugoira metadata");
         theline.appendChild(elemtxt);
         // elemtxt.nodeValue = " >Error" + value.name + "< ";
     });
