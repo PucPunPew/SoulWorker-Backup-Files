@@ -109,6 +109,8 @@
                     }
                 };
                 elem = document.createElement("a");
+                elem.type = "button";
+                elem.className = "YryPnZn";
                 elemtxt = document.createTextNode(" >DL" + value.name + "< ");
                 elem.appendChild(elemtxt);
                 if ("addEventListener" in elem) {
