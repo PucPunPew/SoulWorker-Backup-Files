@@ -108,7 +108,7 @@
                         xhr.send();
                     }
                 };
-                elem = document.createElement("button");
+                elem = document.createElement("a");
                 elem.type = "button";
                 elemtxt = document.createTextNode(" >DL" + value.name + "< ");
                 elem.appendChild(elemtxt);
