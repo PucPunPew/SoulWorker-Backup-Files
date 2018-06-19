@@ -5,8 +5,22 @@
         document.body.appendChild(script);
     });
     var articleDom = document.querySelector("div div article"),
-        theline = document.createElement("br"),
-        ugoiraInfoTmp = window.globalInitData.preload.illust,
+        theline = document.querySelector("div div div.ugoiradownload");
+    if (!theline) {
+        theline = document.createElement("div");
+        theline.className = "ugoiradownload";
+        articleDom.parentElement.insertBefore(theline, articleDom);
+        theline.parentElement.insertBefore(document.createElement("br"), theline.nextSibling);
+    } else {
+        var cNode = theline.cloneNode(false);
+        theline.parentNode.replaceChild(cNode, theline);
+    }
+    if (!window.globalInitData) {
+        var elemtxt = document.createTextNode("Error: Please login");
+        theline.appendChild(elemtxt);
+        return;
+    }
+    var ugoiraInfoTmp = window.globalInitData.preload.illust,
         ugoiraInfo, key;
     for (key in ugoiraInfoTmp)
         if (ugoiraInfoTmp.hasOwnProperty(key) && ugoiraInfoTmp[key].illustId)
@@ -35,7 +49,7 @@
         dummyJSONAnimation.userName = authorInfo.name;
         dummyJSONAnimation.ugokuIllustData = ugoiraMeta.body;
         if (ugoiraMeta.error === false) {
-            articleDom.parentElement.insertBefore(theline, articleDom);
+            //articleDom.parentElement.insertBefore(theline, articleDom);
             [{
                 name: "Zip",
                 data: ugoiraMeta.body.src
@@ -100,7 +114,7 @@
                 } else {
                     elem.attachEvent("onclick", click);
                 }
-                theline.parentElement.insertBefore(elem, theline);
+                theline.appendChild(elem);
             });
         } else {
             var elemtxt;
