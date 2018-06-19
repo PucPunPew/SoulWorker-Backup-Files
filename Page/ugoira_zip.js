@@ -70,16 +70,16 @@
                     var basename = ugoiraInfo.illustId + "_" + ugoiraInfo.illustTitle.replace(/[\\/:*?"<>|\u00b7]/g, "");
                     var savename = basename + value.name + ".ugoira";
                     if (typeof Blob === "undefined") {
-                        elemtxt.nodeValue = " >Save" + value.name + "< ";
+                        elemtxt.nodeValue = " >Save " + value.name + "< ";
                         elem.href = value.data;
                         elem.download = savename;
                     } else {
-                        elemtxt.nodeValue = " >Loading" + value.name + "...< ";
+                        elemtxt.nodeValue = " >Loading " + value.name + "...< ";
                         var xhr = new XMLHttpRequest();
                         xhr.open("GET", value.data);
                         xhr.responseType = "arraybuffer";
                         xhr.addEventListener("load", function () {
-                            elemtxt.nodeValue = " >Save" + value.name + "< ";
+                            elemtxt.nodeValue = " >Save " + value.name + "< ";
                             JSZip.loadAsync(xhr.response).then(function (zip) {
                                 zip.file("animation.json", JSON.stringify(dummyJSONAnimation));
 
@@ -112,7 +112,7 @@
                 innerelem.type = "button";
                 innerelem.className = "YryPnZn";
                 elem = document.createElement("a");
-                elemtxt = document.createTextNode(" >DL" + value.name + "< ");
+                elemtxt = document.createTextNode(" >DL " + value.name + "< ");
                 innerelem.appendChild(elemtxt);
                 if ("addEventListener" in elem) {
                     elem.addEventListener("click", click);
