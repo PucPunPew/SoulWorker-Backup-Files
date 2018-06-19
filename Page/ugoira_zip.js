@@ -105,10 +105,11 @@
                         xhr.send();
                     }
                 };
-                elem = document.createElement("a");
+                elem = document.createElement("button");
+                elem.type = "button";
                 elemtxt = document.createTextNode(" >DL" + value.name + "< ");
                 elem.appendChild(elemtxt);
-                elem.className = "_button";
+                elem.className = "YryPnZn";
                 if ("addEventListener" in elem) {
                     elem.addEventListener("click", click);
                 } else {
