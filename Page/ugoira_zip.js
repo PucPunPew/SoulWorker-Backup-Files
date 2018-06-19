@@ -35,7 +35,7 @@
         dummyJSONAnimation.userName = authorInfo.name;
         dummyJSONAnimation.ugokuIllustData = ugoiraMeta.body;
         if (ugoiraMeta.error === false) {
-            articleDom.insertBefore(theline);
+            articleDom.parentElement.insertBefore(theline, articleDom);
             [{
                 name: "Zip",
                 data: ugoiraMeta.body.src
@@ -100,7 +100,7 @@
                 } else {
                     elem.attachEvent("onclick", click);
                 }
-                theline.insertBefore(elem);
+                theline.parentElement.insertBefore(elem, theline);
             });
         } else {
             var elemtxt;
