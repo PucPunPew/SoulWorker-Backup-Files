@@ -60,7 +60,7 @@
                 name: "ZipHQ",
                 data: ugoiraMeta.body.originalSrc
             }].forEach(function (value) {
-                var elem, elemtxt, click;
+                var elem, elemtxt, click, innerelem;
                 click = function () {
                     if ("removeEventListener" in elem) {
                         elem.removeEventListener("click", click);
@@ -108,16 +108,18 @@
                         xhr.send();
                     }
                 };
+                innerelem = document.createElement("button");
+                innerelem.type = "button";
+                innerelem.className = "YryPnZn";
                 elem = document.createElement("a");
-                elem.type = "button";
-                elem.className = "YryPnZn";
                 elemtxt = document.createTextNode(" >DL" + value.name + "< ");
-                elem.appendChild(elemtxt);
+                innerelem.appendChild(elemtxt);
                 if ("addEventListener" in elem) {
                     elem.addEventListener("click", click);
                 } else {
                     elem.attachEvent("onclick", click);
                 }
+                elem.appendChild(innerelem);
                 theline.appendChild(elem);
                 elem.parentElement.insertBefore(document.createElement("br"), elem.nextSibling);
             });
