@@ -1,4 +1,7 @@
 (function () {
+    if (window.ugoiradownloadLoaded === true)
+        return;
+    window.ugoiradownloadLoaded = true;
     ["jszip.min.js"].forEach(function (value) {
         var script = document.createElement("script");
         script.src = "https://pucpunpew.github.io/SoulWorker-Backup-Files/Page/" + value;
@@ -19,7 +22,7 @@
         theline.parentNode.replaceChild(cNode, theline);
     }
     if (!window.globalInitData) {
-        var elemtxt = document.createTextNode("Ugoira Download Error: Please login");
+        var elemtxt = document.createTextNode("Ugoira Download: Error: Please login");
         theline.appendChild(elemtxt);
         return;
     }
@@ -42,9 +45,6 @@
     xhrMain.addEventListener("load", function () {
         var ugoiraMeta = xhrMain.response,
             dummyJSONAnimation = {};
-        if (ugoiraMeta.mime) {
-
-        }
         dummyJSONAnimation.illustComment = ugoiraInfo.illustComment;
         dummyJSONAnimation.illustId = ugoiraInfo.illustId;
         dummyJSONAnimation.illustTitle = ugoiraInfo.illustTitle;
@@ -52,6 +52,10 @@
         dummyJSONAnimation.userName = authorInfo.name;
         dummyJSONAnimation.ugokuIllustData = ugoiraMeta.body;
         if (ugoiraMeta.error === false) {
+            var theSpan = document.createElement("span");
+            theSpan.appendChild(document.createTextNode("Ugoira Download:"));
+            theline.appendChild(theSpan);
+            theline.appendChild(document.createElement("br"));
             //articleDom.parentElement.insertBefore(theline, articleDom);
             [{
                 name: "Zip",
@@ -126,14 +130,14 @@
         } else {
             var elemtxt;
             if (ugoiraMeta.message)
-                elemtxt = document.createTextNode("Ugoira Download Error:" + ugoiraMeta.message);
+                elemtxt = document.createTextNode("Error:" + ugoiraMeta.message);
             else
-                elemtxt = document.createTextNode("Ugoira Download Error:" + ugoiraMeta.error);
+                elemtxt = document.createTextNode("Error:" + ugoiraMeta.error);
             theline.appendChild(elemtxt);
         }
     });
     xhrMain.addEventListener("error", function () {
-        var elemtxt = document.createTextNode("Ugoira Download Error: Cannot send request for ugoira metadata");
+        var elemtxt = document.createTextNode("Ugoira Download: Error: Cannot send request for ugoira metadata");
         theline.appendChild(elemtxt);
         // elemtxt.nodeValue = " >Error" + value.name + "< ";
     });
