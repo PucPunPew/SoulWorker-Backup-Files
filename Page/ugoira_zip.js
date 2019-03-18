@@ -2,11 +2,18 @@
     if (window.ugoiradownloadLoaded === true)
         return;
     window.ugoiradownloadLoaded = true;
+    function importJS(link) {
+        var script = document.createElement("script");
+        script.src = link;
+        document.body.appendChild(script);
+    }
+    /*
     ["jszip.min.js"].forEach(function (value) {
         var script = document.createElement("script");
         script.src = "https://pucpunpew.github.io/SoulWorker-Backup-Files/Page/" + value;
         document.body.appendChild(script);
     });
+    */
     //img-container
     var cssStyle = `
 .ugoira-downloader-ui {
@@ -16,16 +23,19 @@
     transform: translateY(-50%);
 }
     `;
-    var linkElement = window.document.createElement('link');
-    linkElement.setAttribute('rel', 'stylesheet');
-    linkElement.setAttribute('type', 'text/css');
-    linkElement.setAttribute('href', 'data:text/css;charset=UTF-8,' + encodeURIComponent(cssStyle));
-    document.head.appendChild(linkElement);
 
     var downloadPanel = document.querySelector(".ugoira-downloader-ui"),
         isInit = (downloadPanel ? true : false);
 
     if (!isInit) {
+        importJS("https://cdnjs.cloudflare.com/ajax/libs/jszip/3.2.0/jszip.min.js");
+
+        var linkElement = window.document.createElement('link');
+        linkElement.setAttribute('rel', 'stylesheet');
+        linkElement.setAttribute('type', 'text/css');
+        linkElement.setAttribute('href', 'data:text/css;charset=UTF-8,' + encodeURIComponent(cssStyle));
+        document.head.appendChild(linkElement);
+
         downloadPanel = document.createElement("div");
         downloadPanel.className = "ugoira-downloader-ui";
         document.body.appendChild(downloadPanel);
