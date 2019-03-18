@@ -28,11 +28,8 @@
     if (!isInit) {
         downloadPanel = document.createElement("div");
         downloadPanel.className = "ugoira-downloader-ui";
-        document.appendChild(downloadPanel);
+        document.body.appendChild(downloadPanel);
         // downloadPanel.parentElement.insertBefore(document.createElement("br"), downloadPanel.nextSibling);
-    } else {
-        var cNode = theline.cloneNode(false);
-        theline.parentNode.replaceChild(cNode, theline);
     }
     if (!window.globalInitData) {
         var elemtxt = document.createTextNode("Ugoira Download: Error: Please login");
