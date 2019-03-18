@@ -137,7 +137,7 @@
                     elem.attachEvent("onclick", click);
                 }
                 elem.appendChild(innerelem);
-                theline.appendChild(elem);
+                downloadPanel.appendChild(elem);
                 elem.parentElement.insertBefore(document.createElement("br"), elem.nextSibling);
             });
         } else {
