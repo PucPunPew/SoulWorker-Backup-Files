@@ -8,24 +8,38 @@
         document.body.appendChild(script);
     });
     //img-container
-    var articleDom = document.querySelector("div div article"),
-        theline = document.querySelector("div div div.ugoiradownload");
-    if (!articleDom)
-        articleDom = document.querySelector(".cool-work-main .img-container");
-    if (!theline) {
-        theline = document.createElement("div");
-        theline.className = "ugoiradownload";
-        articleDom.parentElement.insertBefore(theline, articleDom);
-        theline.parentElement.insertBefore(document.createElement("br"), theline.nextSibling);
+    var cssStyle = `
+.ugoira-downloader-ui {
+    position: fixed;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+}
+    `;
+    var linkElement = window.document.createElement('link');
+    linkElement.setAttribute('rel', 'stylesheet');
+    linkElement.setAttribute('type', 'text/css');
+    linkElement.setAttribute('href', 'data:text/css;charset=UTF-8,' + encodeURIComponent(cssStyle));
+    document.head.appendChild(linkElement);
+
+    var downloadPanel = document.querySelector(".ugoira-downloader-ui"),
+        isInit = (downloadPanel ? true : false);
+
+    if (!isInit) {
+        downloadPanel = document.createElement("div");
+        downloadPanel.className = "ugoira-downloader-ui";
+        document.appendChild(downloadPanel);
+        // downloadPanel.parentElement.insertBefore(document.createElement("br"), downloadPanel.nextSibling);
     } else {
         var cNode = theline.cloneNode(false);
         theline.parentNode.replaceChild(cNode, theline);
     }
     if (!window.globalInitData) {
         var elemtxt = document.createTextNode("Ugoira Download: Error: Please login");
-        theline.appendChild(elemtxt);
+        downloadPanel.appendChild(elemtxt);
         return;
     }
+
     var ugoiraInfoTmp = window.globalInitData.preload.illust,
         ugoiraInfo, key;
     for (key in ugoiraInfoTmp)
@@ -54,8 +68,8 @@
         if (ugoiraMeta.error === false) {
             var theSpan = document.createElement("span");
             theSpan.appendChild(document.createTextNode("Ugoira Download:"));
-            theline.appendChild(theSpan);
-            theline.appendChild(document.createElement("br"));
+            downloadPanel.appendChild(theSpan);
+            downloadPanel.appendChild(document.createElement("br"));
             //articleDom.parentElement.insertBefore(theline, articleDom);
             [{
                 name: "Ugoira",
@@ -135,12 +149,12 @@
                 elemtxt = document.createTextNode("Error:" + ugoiraMeta.message);
             else
                 elemtxt = document.createTextNode("Error:" + ugoiraMeta.error);
-            theline.appendChild(elemtxt);
+            downloadPanel.appendChild(elemtxt);
         }
     });
     xhrMain.addEventListener("error", function () {
         var elemtxt = document.createTextNode("Ugoira Download: Error: Cannot send request for ugoira metadata");
-        theline.appendChild(elemtxt);
+        downloadPanel.appendChild(elemtxt);
         // elemtxt.nodeValue = " >Error" + value.name + "< ";
     });
     xhrMain.send();
