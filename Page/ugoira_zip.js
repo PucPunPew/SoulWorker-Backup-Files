@@ -131,7 +131,7 @@
                             });
                         });
                         xhr.addEventListener("error", function () {
-                            elemtxt.nodeValue = " >Error" + value.name + "< ";
+                            elemtxt.nodeValue = " >Error [" + this.statusText + "]: " + value.name + "< ";
                         });
                         xhr.send();
                     }
