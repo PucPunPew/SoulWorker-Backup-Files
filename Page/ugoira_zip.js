@@ -21,6 +21,7 @@
     top: 50%;
     left: 10px;
     transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5) !important;
 }
     `;
 
