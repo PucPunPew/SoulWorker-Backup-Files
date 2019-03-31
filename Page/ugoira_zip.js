@@ -1,4 +1,4 @@
-(function (w) {
+(async function (w) {
     let myCacheStorage = w.sessionStorage;
     function importJS(link) {
         var script = document.createElement("script"),
@@ -45,16 +45,18 @@
         return ___getIllustrationData("/ajax/illust/" + illustrationID + "/ugoira_meta");
     }
 
-    if (!Object.hasOwnProperty.call(w, "$$$")) {
+    if (!("jQuery" in w) || typeof (jQuery) === "undefined") {
+        w.jQuery = "";
+        var myJquery = await (new Promise(function (resolve, reject) {
+            var script = document.createElement('script');
+            script.onload = function () {
+                resolve(jQuery.noConflict());
+            };
+            script.src = "https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js";
+            document.head.appendChild(script);
+        }));
         Object.defineProperty(w, "$$$", {
-            value: (await new Promise(function (resolve, reject) {
-                var script = document.createElement('script');
-                script.onload = function () {
-                    resolve(jQuery.noConflict());
-                }
-                script.src = "https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js";
-                document.head.appendChild(script);
-            })),
+            value: myJquery,
             writable: false,
             configurable: false,
             enumerable: true
