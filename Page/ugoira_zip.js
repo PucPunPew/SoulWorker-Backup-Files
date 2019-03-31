@@ -292,18 +292,15 @@
             }
         });
     }
-    refreshDownloadPanel(getIllustrationID());
-    let myTarget = document.querySelector("#root main");
+    let lastIllustID = getIllustrationID(),
+        myTarget = document.querySelector("#root main");
+    refreshDownloadPanel(lastIllustID);
     if (myTarget) {
-        let lastIllustID = null;
         (new MutationObserver(function (records) {
-            console.log(location);
-            console.log(location.search);
-            console.log(getIllustrationID());
             setTimeout(function () {
                 let illustID = getIllustrationID();
-                if (illustID !== lastIllustID) {
-                    illustID = lastIllustID;
+                if (lastIllustID !== illustID) {
+                    lastIllustID = illustID;
                     refreshDownloadPanel(illustID);
                 }
             }, 100);
