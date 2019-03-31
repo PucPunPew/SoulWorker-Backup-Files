@@ -97,7 +97,7 @@
     });
     */
     //img-container
-    var cssStyle = `.ugoira-downloader-ui{position:fixed;top:50%;left:10px;transform:translateY(-50%);background-color:rgba(0,0,0,.5)!important;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px}.ugoira-downloader-ui a{display:block;border-radius:30px;padding:10px;margin-top: 5px;}`;
+    var cssStyle = `.ugoira-downloader-ui{position:fixed;top:50%;left:10px;transform:translateY(-50%);background-color:rgba(0,0,0,.5)!important;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px}.ugoira-downloader-ui a{display:block;border-radius:30px;padding:10px;margin-top:5px;background-color:rgb(39,125,165);cursor:pointer;}`;
 
     var downloadPanel = document.querySelector(".ugoira-downloader-ui"),
         isInit = (downloadPanel ? true : false);
@@ -213,8 +213,10 @@
                         if (buttonData.isCompleted) {
                             myself.attr("href", buttonData.data).attr("download", savename);
                             myself.text("> Save " + btnTextName + " <");
+                            myself.css("cursor", "pointer");
                         } else {
                             myself.text("> Downloading " + btnTextName + " <");
+                            myself.css("cursor", "wait");
                             fetch(buttonData.data).then(function (response) {
                                 if (response.ok) {
                                     response.arrayBuffer().then(function (arrayBuffer) {
@@ -243,20 +245,26 @@
                                                 }
                                                 myself.attr("href", myObjectUrl).attr("download", savename);
                                                 myself.text("> Save " + btnTextName + " <");
+                                                myself.css("cursor", "pointer");
                                             }).catch(function (reason) {
                                                 myself.text("> Error [5]: " + reason + " <");
+                                                myself.css("cursor", "default");
                                             });
                                         }).catch(function (reason) {
                                             myself.text("> Error [4]: " + reason + " <");
+                                            myself.css("cursor", "default");
                                         });
                                     }).catch(function (reason) {
                                         myself.text("> Error [3]: " + reason + " <");
+                                        myself.css("cursor", "default");
                                     });
                                 } else {
                                     myself.text("> Error [2]: " + response.statusText + " <");
+                                    myself.css("cursor", "default");
                                 }
                             }).catch(function (reason) {
                                 myself.text("> Error [1]: " + reason + " <");
+                                myself.css("cursor", "default");
                             });
                         }
                     }));
