@@ -132,18 +132,23 @@
         var task_cachedObject = getCache(illustID);
         if (!task_cachedObject) {
             task_cachedObject = getIllustrationData(illustID).then(function (illustDataFromServer) {
-                return Promise.resolve(setCache(illustID, {
-                    metadata: {
-                        illustComment: illustDataFromServer.illustComment,
-                        illustId: illustDataFromServer.illustId,
-                        illustTitle: illustDataFromServer.illustTitle,
-                        userId: illustDataFromServer.userId,
-                        userName: illustDataFromServer.userName,
-                        ugokuIllustData: null
-                    },
-                    normalSizePromiseLink: "",
-                    originalSizePromiseLink: ""
-                }));
+                if (myCachedObject.illustType === 2) {
+                    return Promise.resolve(setCache(illustID, {
+                        metadata: {
+                            illustComment: illustDataFromServer.illustComment,
+                            illustId: illustDataFromServer.illustId,
+                            illustTitle: illustDataFromServer.illustTitle,
+                            userId: illustDataFromServer.userId,
+                            userName: illustDataFromServer.userName,
+                            ugokuIllustData: null
+                        },
+                        normalSizePromiseLink: "",
+                        originalSizePromiseLink: ""
+                    }));
+                } else {
+                    $downloadPanel.empty();
+                    $downloadPanel.text("> Ugoira Download: Error [2]: Not an ugoira. <");
+                }
             }).catch(function (reason) {
                 $downloadPanel.empty();
                 $downloadPanel.text("Ugoira Download: Error [1]: " + reason);
@@ -163,133 +168,128 @@
         // "https://www.pixiv.net/ajax/illust/" + dummyJSONAnimation.metadata.illustId + "/ugoira_meta"
 
         task_cachedObject.then(function (myCachedObject) {
-            if (myCachedObject.illustType === 2) {
-                let awaitingDummy;
-                if (!myCachedObject.metadata.ugokuIllustData) {
-                    awaitingDummy = getUgoiraData(illustID);
-                    awaitingDummy.then(function (json) {
-                        Object.assign(myCachedObject.metadata, {
-                            ugokuIllustData: json
-                        });
-                        myCachedObject = setCache(illustID, myCachedObject);
-                    });
-                } else {
-                    awaitingDummy = Promise.resolve(myCachedObject.metadata.ugokuIllustData);
-                }
-
+            let awaitingDummy;
+            if (!myCachedObject.metadata.ugokuIllustData) {
+                awaitingDummy = getUgoiraData(illustID);
                 awaitingDummy.then(function (json) {
-                    $downloadPanel.empty();
-                    $downloadPanel.text("Ugoira Download:");
-                    [(function () {
-                        let result = {
-                            isOriginal: false,
-                            isCompleted: false,
-                            data: json.src
-                        };
-                        if (myCachedObject.normalSizePromiseLink) {
-                            result.isCompleted = true;
-                            result.data = myCachedObject.normalSizePromiseLink;
-                        }
-                        return result;
-                    })(), (function () {
-                        let result = {
-                            isOriginal: true,
-                            isCompleted: false,
-                            data: json.originalSrc
-                        };
-                        if (myCachedObject.originalSizePromiseLink) {
-                            result.isCompleted = true;
-                            result.data = myCachedObject.originalSizePromiseLink;
-                        }
-                        return result;
-                    })()].forEach(function (buttonData) {
-                        var btnTextName = (buttonData.isOriginal ? "Original Resolution" : "Normal Resolution"),
-                            basename = myCachedObject.metadata.illustId + "_" + myCachedObject.metadata.illustTitle.replace(/[\\/:*?"<>|\u00b7]/g, ""),
-                            savename = basename + "-" + (buttonData.isOriginal ? "OriginalSize" : "NormalSize") + ".ugoira";
+                    Object.assign(myCachedObject.metadata, {
+                        ugokuIllustData: json
+                    });
+                    myCachedObject = setCache(illustID, myCachedObject);
+                });
+            } else {
+                awaitingDummy = Promise.resolve(myCachedObject.metadata.ugokuIllustData);
+            }
 
-                        if (buttonData.isCompleted) {
-                            $downloadPanel.append($$$("<a>").attr("type", "button").attr("href", buttonData.data).attr("download", savename)
-                                .text("> Save " + btnTextName + " <")
-                                .css("cursor", "pointer")
-                            );
-                        } else {
-                            $downloadPanel.append($$$("<a>").attr("type", "button").text("> Download " + btnTextName + " <").one("click", function (e) {
-                                e.preventDefault();
-                                var myself = $$$(this);
+            awaitingDummy.then(function (json) {
+                $downloadPanel.empty();
+                $downloadPanel.text("Ugoira Download:");
+                [(function () {
+                    let result = {
+                        isOriginal: false,
+                        isCompleted: false,
+                        data: json.src
+                    };
+                    if (myCachedObject.normalSizePromiseLink) {
+                        result.isCompleted = true;
+                        result.data = myCachedObject.normalSizePromiseLink;
+                    }
+                    return result;
+                })(), (function () {
+                    let result = {
+                        isOriginal: true,
+                        isCompleted: false,
+                        data: json.originalSrc
+                    };
+                    if (myCachedObject.originalSizePromiseLink) {
+                        result.isCompleted = true;
+                        result.data = myCachedObject.originalSizePromiseLink;
+                    }
+                    return result;
+                })()].forEach(function (buttonData) {
+                    var btnTextName = (buttonData.isOriginal ? "Original Resolution" : "Normal Resolution"),
+                        basename = myCachedObject.metadata.illustId + "_" + myCachedObject.metadata.illustTitle.replace(/[\\/:*?"<>|\u00b7]/g, ""),
+                        savename = basename + "-" + (buttonData.isOriginal ? "OriginalSize" : "NormalSize") + ".ugoira";
 
-                                if (buttonData.isCompleted) {
-                                    myself.attr("href", buttonData.data).attr("download", savename);
-                                    myself.text("> Save " + btnTextName + " <");
-                                    myself.css("cursor", "pointer");
-                                } else {
-                                    myself.text("> Downloading " + btnTextName + " <");
-                                    myself.css("cursor", "wait");
-                                    fetch(buttonData.data).then(function (response) {
-                                        if (response.ok) {
-                                            response.arrayBuffer().then(function (arrayBuffer) {
-                                                JSZip.loadAsync(arrayBuffer).then(function (zip) {
-                                                    zip.file("animation.json", JSON.stringify(myCachedObject.metadata));
+                    if (buttonData.isCompleted) {
+                        $downloadPanel.append($$$("<a>").attr("type", "button").attr("href", buttonData.data).attr("download", savename)
+                            .text("> Save " + btnTextName + " <")
+                            .css("cursor", "pointer")
+                        );
+                    } else {
+                        $downloadPanel.append($$$("<a>").attr("type", "button").text("> Download " + btnTextName + " <").one("click", function (e) {
+                            e.preventDefault();
+                            var myself = $$$(this);
 
-                                                    var myZipOption = {
-                                                        type: "blob",
-                                                        compression: "DEFLATE",
-                                                        compressionOptions: { level: 9 }
-                                                    };
-                                                    if (myCachedObject.metadata.illustComment) {
-                                                        myZipOption.comment = myCachedObject.metadata.illustComment;
+                            if (buttonData.isCompleted) {
+                                myself.attr("href", buttonData.data).attr("download", savename);
+                                myself.text("> Save " + btnTextName + " <");
+                                myself.css("cursor", "pointer");
+                            } else {
+                                myself.text("> Downloading " + btnTextName + " <");
+                                myself.css("cursor", "wait");
+                                fetch(buttonData.data).then(function (response) {
+                                    if (response.ok) {
+                                        response.arrayBuffer().then(function (arrayBuffer) {
+                                            JSZip.loadAsync(arrayBuffer).then(function (zip) {
+                                                zip.file("animation.json", JSON.stringify(myCachedObject.metadata));
+
+                                                var myZipOption = {
+                                                    type: "blob",
+                                                    compression: "DEFLATE",
+                                                    compressionOptions: { level: 9 }
+                                                };
+                                                if (myCachedObject.metadata.illustComment) {
+                                                    myZipOption.comment = myCachedObject.metadata.illustComment;
+                                                }
+
+                                                zip.generateAsync(myZipOption).then(function (blob) {
+                                                    var myObjectUrl = window.URL.createObjectURL(blob);
+                                                    if (buttonData.isOriginal) {
+                                                        myCachedObject = setCache(illustID, {
+                                                            originalSizePromiseLink: myObjectUrl
+                                                        });
+                                                    } else {
+                                                        myCachedObject = setCache(illustID, {
+                                                            normalSizePromiseLink: myObjectUrl
+                                                        });
                                                     }
-
-                                                    zip.generateAsync(myZipOption).then(function (blob) {
-                                                        var myObjectUrl = window.URL.createObjectURL(blob);
-                                                        if (buttonData.isOriginal) {
-                                                            myCachedObject = setCache(illustID, {
-                                                                originalSizePromiseLink: myObjectUrl
-                                                            });
-                                                        } else {
-                                                            myCachedObject = setCache(illustID, {
-                                                                normalSizePromiseLink: myObjectUrl
-                                                            });
-                                                        }
-                                                        myself.attr("href", myObjectUrl).attr("download", savename);
-                                                        myself.text("> Save " + btnTextName + " <");
-                                                        myself.css("cursor", "pointer");
-                                                    }).catch(function (reason) {
-                                                        myself.text("> Error [5]: " + reason + " <");
-                                                        myself.css("cursor", "default");
-                                                    });
+                                                    myself.attr("href", myObjectUrl).attr("download", savename);
+                                                    myself.text("> Save " + btnTextName + " <");
+                                                    myself.css("cursor", "pointer");
                                                 }).catch(function (reason) {
-                                                    myself.text("> Error [4]: " + reason + " <");
+                                                    myself.text("> Error [5]: " + reason + " <");
                                                     myself.css("cursor", "default");
                                                 });
                                             }).catch(function (reason) {
-                                                myself.text("> Error [3]: " + reason + " <");
+                                                myself.text("> Error [4]: " + reason + " <");
                                                 myself.css("cursor", "default");
                                             });
+                                        }).catch(function (reason) {
+                                            myself.text("> Error [3]: " + reason + " <");
+                                            myself.css("cursor", "default");
+                                        });
+                                    } else {
+                                        if (response.status === 404) {
+                                            myself.text("> Error [2]: Not a valid ugoira. Are you sure the current page is showing an ugoira image? <");
+                                            myself.css("cursor", "default");
                                         } else {
-                                            if (response.status === 404) {
-                                                myself.text("> Error [2]: Not a valid ugoira. Are you sure the current page is showing an ugoira image? <");
-                                                myself.css("cursor", "default");
-                                            } else {
-                                                myself.text("> Error [2]: " + response.statusText + " <");
-                                                myself.css("cursor", "default");
-                                            }
+                                            myself.text("> Error [2]: " + response.statusText + " <");
+                                            myself.css("cursor", "default");
                                         }
-                                    }).catch(function (reason) {
-                                        myself.text("> Error [1]: " + reason + " <");
-                                        myself.css("cursor", "default");
-                                    });
-                                }
-                            }));
-                        }
-                    });
-                }).catch(function (err) {
-                    $downloadPanel.empty();
-                    $downloadPanel.text("Ugoira Download: Error [2]: " + err);
+                                    }
+                                }).catch(function (reason) {
+                                    myself.text("> Error [1]: " + reason + " <");
+                                    myself.css("cursor", "default");
+                                });
+                            }
+                        }));
+                    }
                 });
-            } else {
+            }).catch(function (err) {
                 $downloadPanel.empty();
-                $downloadPanel.text("> Ugoira Download: Error [2]: Not an ugoira. <");
-            }
+                $downloadPanel.text("Ugoira Download: Error [2]: " + err);
+            });
         });
     }
     let lastIllustID = getIllustrationID(),
