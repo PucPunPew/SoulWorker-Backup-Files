@@ -132,7 +132,7 @@
         var task_cachedObject = getCache(illustID);
         if (!task_cachedObject) {
             task_cachedObject = getIllustrationData(illustID).then(function (illustDataFromServer) {
-                if (myCachedObject.illustType === 2) {
+                if (illustDataFromServer.illustType === 2) {
                     return Promise.resolve(setCache(illustID, {
                         metadata: {
                             illustComment: illustDataFromServer.illustComment,
