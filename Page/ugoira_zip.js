@@ -71,7 +71,7 @@
     }
 
     function getCache(illustrationID) {
-        let item = myCacheStorage.getItem("ugoiradownload_" + illustrationID);
+        let item = myCacheStorage.getItem("ugoiradownload_cache_" + illustrationID);
         if (!item) {
             return null;
         }
@@ -81,10 +81,10 @@
     function setCache(illustrationID, cacheData, overwrite = false) {
         if (!overwrite) {
             let myresult = Object.assign(getCache(illustrationID) || {}, cacheData);
-            myCacheStorage.setItem("ugoiradownload_" + illustrationID, JSON.stringify(myresult));
+            myCacheStorage.setItem("ugoiradownload_cache_" + illustrationID, JSON.stringify(myresult));
             return myresult;
         } else {
-            myCacheStorage.setItem("ugoiradownload_" + illustrationID, JSON.stringify(cacheData));
+            myCacheStorage.setItem("ugoiradownload_cache_" + illustrationID, JSON.stringify(cacheData));
             return cacheData;
         }
     }
