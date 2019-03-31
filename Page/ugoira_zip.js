@@ -159,7 +159,8 @@
 
     var awaitingDummy;
     if (myCachedObject.metadata.ugokuIllustData) {
-        awaitingDummy = getUgoiraData(illustID).then(function (json) {
+        awaitingDummy = getUgoiraData(illustID);
+        awaitingDummy.then(function (json) {
             Object.assign(myCachedObject.metadata, {
                 ugokuIllustData: json
             });
