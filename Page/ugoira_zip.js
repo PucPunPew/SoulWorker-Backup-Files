@@ -288,26 +288,16 @@
                 });
             } else {
                 $downloadPanel.empty();
-                $downloadPanel.text("> Ugoira Download: Error [2]: Not a valid ugoira. Are you sure the current page is showing an ugoira image? <");
+                $downloadPanel.text("> Ugoira Download: Error [2]: Not a valid ugoira. Try to restart browser? <");
             }
         });
     }
     refreshDownloadPanel(getIllustrationID());
-    let lastIllustID = null;
-    $$$(window).on("popstate", function (e) {
-        console.log(e);
-    }).on("load", function (e) {
-        let illustID = getIllustrationID();
-        if (illustID !== lastIllustID) {
-            illustID = lastIllustID;
-            refreshDownloadPanel(illustID);
-        }
-    });
-    return;
     let myTarget = document.querySelector("#root main");
     if (myTarget) {
         let lastIllustID = null;
         (new MutationObserver(function (records) {
+            console.log(location);
             setTimeout(function () {
                 let illustID = getIllustrationID();
                 if (illustID !== lastIllustID) {
