@@ -12,7 +12,7 @@
         return returnResult;
     }
     function getIllustrationID() {
-        return (new URLSearchParams(window.location.search)).get("illust_id");
+        return (new URLSearchParams(location.search)).get("illust_id");
     }
     function ___getIllustrationData(url) {
         return (new Promise(function (resolve, reject) {
@@ -97,7 +97,7 @@
     });
     */
     //img-container
-    var cssStyle = `.ugoira-downloader-ui{position:fixed;top:50%;left:10px;transform:translateY(-50%);background-color:rgba(0,0,0,.5)!important;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px}.ugoira-downloader-ui a{display:block;border-radius:30px;padding:10px;margin-top:5px;background-color:rgb(39,125,165);cursor:pointer;}`;
+    var cssStyle = `.ugoira-downloader-ui{position:fixed;z-index:9999;top:50%;left:10px;transform:translateY(-50%);background-color:rgba(0,0,0,.5)!important;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px}.ugoira-downloader-ui a{display:block;border-radius:30px;padding:10px;margin-top:5px;background-color:rgb(39,125,165);cursor:pointer;}`;
 
     var downloadPanel = document.querySelector(".ugoira-downloader-ui"),
         isInit = (downloadPanel ? true : false);
@@ -282,7 +282,7 @@
         let lastIllustID = null;
         (new MutationObserver(function (records) {
             setTimeout(function () {
-                let illustID = (new URLSearchParams(document.location)).get("illust_id");
+                let illustID = getIllustrationID();
                 if (illustID !== lastIllustID) {
                     illustID = lastIllustID;
                     refreshDownloadPanel(illustID);
