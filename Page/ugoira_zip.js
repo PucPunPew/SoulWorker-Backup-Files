@@ -97,7 +97,7 @@
     });
     */
     //img-container
-    var cssStyle = `.ugoira-downloader-ui{position:fixed;z-index:9999;top:50%;left:10px;transform:translateY(-50%);background-color:rgba(0,0,0,.5)!important;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px}.ugoira-downloader-ui a{display:block;border-radius:30px;padding:10px;margin-top:5px;background-color:rgb(39,125,165);cursor:pointer;}`;
+    var cssStyle = `.ugoira-downloader-ui{color:white;position:fixed;z-index:9999;top:50%;left:10px;transform:translateY(-50%);background-color:rgba(0,0,0,.5)!important;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px}.ugoira-downloader-ui a{display:block;border-radius:30px;padding:10px;margin-top:5px;background-color:rgb(39,125,165);cursor:pointer;}`;
 
     var downloadPanel = document.querySelector(".ugoira-downloader-ui"),
         isInit = (downloadPanel ? true : false);
@@ -288,7 +288,7 @@
                 });
             } else {
                 $downloadPanel.empty();
-                $downloadPanel.text("> Ugoira Download: Error [2]: Not a valid ugoira. Try to restart browser? <");
+                $downloadPanel.text("> Ugoira Download: Error [2]: Not a ugoira. <");
             }
         });
     }
@@ -298,6 +298,8 @@
         let lastIllustID = null;
         (new MutationObserver(function (records) {
             console.log(location);
+            console.log(location.search);
+            console.log(getIllustrationID());
             setTimeout(function () {
                 let illustID = getIllustrationID();
                 if (illustID !== lastIllustID) {
