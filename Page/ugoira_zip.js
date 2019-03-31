@@ -156,12 +156,19 @@
     */
     // "https://www.pixiv.net/ajax/illust/" + ugoiraInfo.illustId + "/ugoira_meta"
 
-    getUgoiraData(illustID).then(function (json) {
-        Object.assign(myCachedObject.metadata, {
-            ugokuIllustData: json
+    var awaitingDummy;
+    if (myCachedObject.metadata.ugokuIllustData) {
+        awaitingDummy = getUgoiraData(illustID).then(function (json) {
+            Object.assign(myCachedObject.metadata, {
+                ugokuIllustData: json
+            });
+            myCachedObject = setCache(illustID, myCachedObject);
         });
-        myCachedObject = setCache(illustID, myCachedObject);
+    } else {
+        awaitingDummy = Promise.resolve(myCachedObject.metadata.ugokuIllustData);
+    }
 
+    awaitingDummy.then(function (json) {
         [(function () {
             let result = {
                 isOriginal: false,
