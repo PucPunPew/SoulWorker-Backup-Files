@@ -284,6 +284,9 @@
         });
     }
     refreshDownloadPanel(getIllustrationID());
+    $$$(window).on("popstate", function (e) {
+        console.log(e);
+    });
     let myTarget = document.querySelector("#root main");
     if (myTarget) {
         let lastIllustID = null;
