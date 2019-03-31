@@ -288,7 +288,7 @@
                 });
             } else {
                 $downloadPanel.empty();
-                $downloadPanel.text("> Ugoira Download: Error [2]: Not a ugoira. <");
+                $downloadPanel.text("> Ugoira Download: Error [2]: Not an ugoira. <");
             }
         });
     }
