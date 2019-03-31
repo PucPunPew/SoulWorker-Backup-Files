@@ -97,7 +97,7 @@
     });
     */
     //img-container
-    var cssStyle = `.ugoira-downloader-ui{position:fixed;top:50%;left:10px;transform:translateY(-50%);background-color:rgba(0,0,0,.5)!important}.ugoira-downloader-ui a{display:block;border-radius:30px padding: 10px}`;
+    var cssStyle = `.ugoira-downloader-ui{position:fixed;top:50%;left:10px;transform:translateY(-50%);background-color:rgba(0,0,0,.5)!important}.ugoira-downloader-ui a{display:block;border-radius:30px;padding:10px;-webkit-appearance:button;-moz-appearance:button;appearance:button;}`;
 
     var downloadPanel = document.querySelector(".ugoira-downloader-ui"),
         isInit = (downloadPanel ? true : false);
@@ -159,7 +159,7 @@
     dummyJSONAnimation.userName = illustDataFromServer.userName;
     dummyJSONAnimation.ugokuIllustData = ugoiraMeta.body;
     */
-    // "https://www.pixiv.net/ajax/illust/" + ugoiraInfo.illustId + "/ugoira_meta"
+    // "https://www.pixiv.net/ajax/illust/" + dummyJSONAnimation.metadata.illustId + "/ugoira_meta"
 
     var awaitingDummy;
     if (!myCachedObject.metadata.ugokuIllustData) {
@@ -203,7 +203,7 @@
                 e.preventDefault();
 
                 var myself = $$$(this),
-                    basename = ugoiraInfo.illustId + "_" + ugoiraInfo.illustTitle.replace(/[\\/:*?"<>|\u00b7]/g, ""),
+                    basename = myCachedObject.metadata.illustId + "_" + myCachedObject.metadata.illustTitle.replace(/[\\/:*?"<>|\u00b7]/g, ""),
                     savename = basename + "-" + (buttonData.isOriginal ? "OriginalSize" : "NormalSize") + ".ugoira";
 
                 if (buttonData.isCompleted) {
