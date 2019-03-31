@@ -1,12 +1,89 @@
-(function () {
-    if (window.ugoiradownloadLoaded === true)
-        return;
-    window.ugoiradownloadLoaded = true;
+(function (w) {
+    let myCacheStorage = w.sessionStorage;
     function importJS(link) {
-        var script = document.createElement("script");
+        var script = document.createElement("script"),
+            returnResult = new Promise(function (resolve, reject) {
+                script.onload = function () {
+                    resolve();
+                }
+            });
         script.src = link;
         document.body.appendChild(script);
+        return returnResult;
     }
+    function getIllustrationID() {
+        return (new URLSearchParams(w.location.search)).get("illust_id");
+    }
+    function ___getIllustrationData(url) {
+        return new Promise(function (resolve, reject) {
+            fetch(url)
+                .then(function (response) {
+                    if (response.ok) {
+                        response.json().then(function (json) {
+                            if (json.error === false) {
+                                resolve(json.body);
+                            } else {
+                                reject(json.message);
+                            }
+                        }).catch(function (err) {
+                            reject(err);
+                        })
+                    } else {
+                        reject(response.statusText);
+                    }
+                })
+                .catch(function (reason) {
+                    reject(reason);
+                });
+        });
+        // https://www.pixiv.net/ajax/illust/71644973
+    }
+    function getIllustrationData(illustrationID) {
+        return ___getIllustrationData("/ajax/illust/" + illustrationID);
+    }
+    function getUgoiraData(illustrationID) {
+        return ___getIllustrationData("/ajax/illust/" + illustrationID + "/ugoira_meta");
+    }
+
+    if (!Object.hasOwnProperty.call(w, "$$$")) {
+        Object.defineProperty(w, "$$$", {
+            value: (await new Promise(function (resolve, reject) {
+                var script = document.createElement('script');
+                script.onload = function () {
+                    resolve(jQuery.noConflict());
+                }
+                script.src = "https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js";
+                document.head.appendChild(script);
+            })),
+            writable: false,
+            configurable: false,
+            enumerable: true
+        });
+    }
+
+    function isCache(illustrationID) {
+        return (myCacheStorage.getItem("ugoiradownload_" + illustrationID) !== undefined);
+    }
+
+    function getCache(illustrationID) {
+        let item = myCacheStorage.getItem("ugoiradownload_" + illustrationID);
+        if (!item) {
+            return null;
+        }
+        return JSON.parse(item);
+    }
+
+    function setCache(illustrationID, cacheData, overwrite = false) {
+        if (!overwrite && isCache(illustrationID)) {
+            let myresult = Object.assign(getCache(illustrationID), cacheData);
+            myCacheStorage.setItem("ugoiradownload_" + illustrationID, JSON.stringify(myresult));
+            return myresult;
+        } else {
+            myCacheStorage.setItem("ugoiradownload_" + illustrationID, JSON.stringify(cacheData));
+            return cacheData;
+        }
+    }
+
     /*
     ["jszip.min.js"].forEach(function (value) {
         var script = document.createElement("script");
@@ -15,155 +92,161 @@
     });
     */
     //img-container
-    var cssStyle = `
-.ugoira-downloader-ui {
-    position: fixed;
-    top: 50%;
-    left: 10px;
-    transform: translateY(-50%);
-    background-color: rgba(0, 0, 0, 0.5) !important;
-}
-    `;
+    var cssStyle = `.ugoira-downloader-ui{position:fixed;top:50%;left:10px;transform:translateY(-50%);background-color:rgba(0,0,0,.5)!important}.ugoira-downloader-ui button{display:block;border-radius:30px padding: 10px}`;
 
     var downloadPanel = document.querySelector(".ugoira-downloader-ui"),
         isInit = (downloadPanel ? true : false);
 
     if (!isInit) {
-        importJS("https://cdnjs.cloudflare.com/ajax/libs/jszip/3.2.0/jszip.min.js");
+        downloadPanel = document.createElement("div");
+        downloadPanel.className = "ugoira-downloader-ui";
+        document.body.appendChild(downloadPanel);
 
         var linkElement = window.document.createElement('link');
         linkElement.setAttribute('rel', 'stylesheet');
         linkElement.setAttribute('type', 'text/css');
         linkElement.setAttribute('href', 'data:text/css;charset=UTF-8,' + encodeURIComponent(cssStyle));
         document.head.appendChild(linkElement);
+        linkElement = null;
 
-        downloadPanel = document.createElement("div");
-        downloadPanel.className = "ugoira-downloader-ui";
-        document.body.appendChild(downloadPanel);
+        await importJS("https://cdnjs.cloudflare.com/ajax/libs/jszip/3.2.0/jszip.min.js");
         // downloadPanel.parentElement.insertBefore(document.createElement("br"), downloadPanel.nextSibling);
     }
-    if (!window.globalInitData) {
-        var elemtxt = document.createTextNode("Ugoira Download: Error: Please login");
-        downloadPanel.appendChild(elemtxt);
+    var $downloadPanel = $$$(downloadPanel);
+
+    var illustID = getIllustrationID();
+    if (!illustID) {
+        $downloadPanel.empty();
+        $downloadPanel.text("Ugoira Download: Error: Cannot fetch illustration ID from URL");
         return;
     }
+    $downloadPanel.empty();
+    $downloadPanel.text("Ugoira Download: Fetching illustration info");
 
-    var ugoiraInfoTmp = window.globalInitData.preload.illust,
-        ugoiraInfo, key;
-    for (key in ugoiraInfoTmp)
-        if (ugoiraInfoTmp.hasOwnProperty(key) && ugoiraInfoTmp[key].illustId)
-            ugoiraInfo = ugoiraInfoTmp[key];
+    var myCachedObject = getCache(illustID);
+    if (!myCachedObject) {
+        try {
+            let illustDataFromServer = await getIllustrationData(illustID);
+            myCachedObject = setCache(illustID, {
+                metadata: {
+                    illustComment: illustDataFromServer.illustComment,
+                    illustId: illustDataFromServer.illustId,
+                    illustTitle: illustDataFromServer.illustTitle,
+                    userId: illustDataFromServer.userId,
+                    userName: illustDataFromServer.userName,
+                    ugokuIllustData: null
+                },
+                normalSizePromiseLink: "",
+                originalSizePromiseLink: ""
+            });
+        } catch (err) {
+            $downloadPanel.empty();
+            $downloadPanel.text("Ugoira Download: Error: " + err);
+            return;
+        }
+    }
 
-    var authorInfoTmp = window.globalInitData.preload.user,
-        authorInfo;
-    for (key in authorInfoTmp)
-        if (authorInfoTmp.hasOwnProperty(key) && authorInfoTmp[key].name && authorInfoTmp[key].userId)
-            authorInfo = authorInfoTmp[key];
+    /*
+    dummyJSONAnimation.illustComment = illustDataFromServer.illustComment;
+    dummyJSONAnimation.illustId = illustDataFromServer.illustId;
+    dummyJSONAnimation.illustTitle = illustDataFromServer.illustTitle;
+    dummyJSONAnimation.userId = illustDataFromServer.userId;
+    dummyJSONAnimation.userName = illustDataFromServer.userName;
+    dummyJSONAnimation.ugokuIllustData = ugoiraMeta.body;
+    */
     // "https://www.pixiv.net/ajax/illust/" + ugoiraInfo.illustId + "/ugoira_meta"
 
-    var xhrMain = new XMLHttpRequest();
-    xhrMain.open("GET", "https://www.pixiv.net/ajax/illust/" + ugoiraInfo.illustId + "/ugoira_meta");
-    xhrMain.responseType = "json";
-    xhrMain.addEventListener("load", function () {
-        var ugoiraMeta = xhrMain.response,
-            dummyJSONAnimation = {};
-        dummyJSONAnimation.illustComment = ugoiraInfo.illustComment;
-        dummyJSONAnimation.illustId = ugoiraInfo.illustId;
-        dummyJSONAnimation.illustTitle = ugoiraInfo.illustTitle;
-        dummyJSONAnimation.userId = authorInfo.userId;
-        dummyJSONAnimation.userName = authorInfo.name;
-        dummyJSONAnimation.ugokuIllustData = ugoiraMeta.body;
-        if (ugoiraMeta.error === false) {
-            var theSpan = document.createElement("span");
-            theSpan.appendChild(document.createTextNode("Ugoira Download:"));
-            downloadPanel.appendChild(theSpan);
-            downloadPanel.appendChild(document.createElement("br"));
-            //articleDom.parentElement.insertBefore(theline, articleDom);
-            [{
-                name: "Ugoira",
-                fallbackName: "Zip",
-                data: ugoiraMeta.body.src
-            }, {
-                name: "HQ-Ugoira",
-                fallbackName: "ZipHQ",
-                data: ugoiraMeta.body.originalSrc
-            }].forEach(function (value) {
-                var elem, elemtxt, click, innerelem;
-                click = function () {
-                    if ("removeEventListener" in elem) {
-                        elem.removeEventListener("click", click);
-                    } else {
-                        elem.detachEvent("onclick", click);
-                    }
-                    var basename = ugoiraInfo.illustId + "_" + ugoiraInfo.illustTitle.replace(/[\\/:*?"<>|\u00b7]/g, "");
-                    var savename = basename + value.name + ".ugoira";
-                    if (typeof Blob === "undefined") {
-                        elemtxt.nodeValue = " >Save " + value.fallbackName + "< ";
-                        elem.href = value.data;
-                        elem.download = savename;
-                    } else {
-                        elemtxt.nodeValue = " >Loading " + value.name + "...< ";
-                        var xhr = new XMLHttpRequest();
-                        xhr.open("GET", value.data);
-                        xhr.responseType = "arraybuffer";
-                        xhr.addEventListener("load", function () {
-                            elemtxt.nodeValue = " >Save " + value.name + "< ";
-                            JSZip.loadAsync(xhr.response).then(function (zip) {
-                                zip.file("animation.json", JSON.stringify(dummyJSONAnimation));
+    getUgoiraData(illustID).then(function (json) {
+        Object.assign(myCachedObject.metadata, {
+            ugokuIllustData: json
+        });
+        myCachedObject = setCache(illustID, myCachedObject);
 
-                                zip.generateAsync({
-                                    type: "blob",
-                                    compression: "DEFLATE",
-                                    comment: dummyJSONAnimation.illustComment,
-                                    compressionOptions: {
-                                        level: 9
-                                    }
-                                }).then(function (blob) {
-                                    if ("msSaveOrOpenBlob" in window.navigator) {
-                                        elem.addEventListener("click", function () {
-                                            window.navigator.msSaveOrOpenBlob(blob, savename);
-                                        });
-                                    } else {
-                                        elem.href = window.URL.createObjectURL(blob);
-                                        elem.download = savename;
-                                    }
-                                });
-                            });
-                        });
-                        xhr.addEventListener("error", function () {
-                            elemtxt.nodeValue = " >Error [" + this.statusText + "]: " + value.name + "< ";
-                        });
-                        xhr.send();
-                    }
-                };
-                innerelem = document.createElement("button");
-                innerelem.type = "button";
-                innerelem.className = "YryPnZn";
-                elem = document.createElement("a");
-                elemtxt = document.createTextNode(" >DL " + value.name + "< ");
-                innerelem.appendChild(elemtxt);
-                if ("addEventListener" in elem) {
-                    elem.addEventListener("click", click);
+        [(function () {
+            let result = {
+                isOriginal: false,
+                isCompleted: false,
+                data: json.src
+            };
+            if (myCachedObject.normalSizePromiseLink) {
+                result.isCompleted = true;
+                result.data = myCachedObject.normalSizePromiseLink;
+            }
+            return result;
+        })(), (function () {
+            let result = {
+                isOriginal: true,
+                isCompleted: false,
+                data: json.originalSrc
+            };
+            if (myCachedObject.originalSizePromiseLink) {
+                result.isCompleted = true;
+                result.data = myCachedObject.originalSizePromiseLink;
+            }
+            return result;
+        })()].forEach(function (buttonData) {
+            var btnTextName = (buttonData.isOriginal ? "Original Resolution" : "Normal Resolution");
+            $downloadPanel.append($$$("<a>").attr("type", "button").text("> Download " + btnTextName + " <").one("click", function (e) {
+                e.preventDefault();
+
+                var myself = $$$(this),
+                    basename = ugoiraInfo.illustId + "_" + ugoiraInfo.illustTitle.replace(/[\\/:*?"<>|\u00b7]/g, ""),
+                    savename = basename + "-" + (buttonData.isOriginal ? "OriginalSize" : "NormalSize") + ".ugoira";
+
+                if (buttonData.isCompleted) {
+                    myself.attr("href", buttonData.data).attr("download", savename);
+                    myself.text("> Save " + btnTextName + " <");
                 } else {
-                    elem.attachEvent("onclick", click);
+                    myself.text("> Downloading " + btnTextName + " <");
+                    fetch(buttonData.data).then(function (response) {
+                        if (response.ok) {
+                            response.arrayBuffer().then(function (arrayBuffer) {
+                                JSZip.loadAsync(arrayBuffer).then(function (zip) {
+                                    zip.file("animation.json", JSON.stringify(myCachedObject.metadata));
+
+                                    var myZipOption = {
+                                        type: "blob",
+                                        compression: "DEFLATE",
+                                        compressionOptions: { level: 9 }
+                                    };
+                                    if (myCachedObject.metadata.illustComment) {
+                                        myZipOption.comment = myCachedObject.metadata.illustComment;
+                                    }
+
+                                    zip.generateAsync(myZipOption).then(function (blob) {
+                                        var myObjectUrl = window.URL.createObjectURL(blob);
+                                        if (buttonData.isOriginal) {
+                                            myCachedObject = setCache(illustID, {
+                                                originalSizePromiseLink: myObjectUrl
+                                            });
+                                        } else {
+                                            myCachedObject = setCache(illustID, {
+                                                normalSizePromiseLink: myObjectUrl
+                                            });
+                                        }
+                                        myself.attr("href", myObjectUrl).attr("download", savename);
+                                        myself.text("> Save " + btnTextName + " <");
+                                    }).catch(function (reason) {
+                                        myself.text("> Error [5]: " + reason + " <");
+                                    });
+                                }).catch(function (reason) {
+                                    myself.text("> Error [4]: " + reason + " <");
+                                });
+                            }).catch(function (reason) {
+                                myself.text("> Error [3]: " + reason + " <");
+                            });
+                        } else {
+                            myself.text("> Error [2]: " + response.statusText + " <");
+                        }
+                    }).catch(function (reason) {
+                        myself.text("> Error [1]: " + reason + " <");
+                    });
                 }
-                elem.appendChild(innerelem);
-                downloadPanel.appendChild(elem);
-                elem.parentElement.insertBefore(document.createElement("br"), elem.nextSibling);
-            });
-        } else {
-            var elemtxt;
-            if (ugoiraMeta.message)
-                elemtxt = document.createTextNode("Error:" + ugoiraMeta.message);
-            else
-                elemtxt = document.createTextNode("Error:" + ugoiraMeta.error);
-            downloadPanel.appendChild(elemtxt);
-        }
+            }));
+        });
+
+    }).catch(function (err) {
+        $downloadPanel.empty();
+        $downloadPanel.text("Ugoira Download: Error: " + err);
     });
-    xhrMain.addEventListener("error", function () {
-        var elemtxt = document.createTextNode("Ugoira Download: Error: Cannot send request for ugoira metadata");
-        downloadPanel.appendChild(elemtxt);
-        // elemtxt.nodeValue = " >Error" + value.name + "< ";
-    });
-    xhrMain.send();
-})();
+})(window);
