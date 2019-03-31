@@ -158,7 +158,7 @@
     // "https://www.pixiv.net/ajax/illust/" + ugoiraInfo.illustId + "/ugoira_meta"
 
     var awaitingDummy;
-    if (myCachedObject.metadata.ugokuIllustData) {
+    if (!myCachedObject.metadata.ugokuIllustData) {
         awaitingDummy = getUgoiraData(illustID);
         awaitingDummy.then(function (json) {
             Object.assign(myCachedObject.metadata, {
