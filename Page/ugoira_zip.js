@@ -58,12 +58,14 @@
     }
 
     if (!("$$$" in w)) {
+        let myVal = myJquery || w.jQuery.noConflict();
         Object.defineProperty(w, "$$$", {
-            value: myJquery || w.jQuery.noConflict(),
+            value: myVal,
             writable: false,
             configurable: false,
             enumerable: true
         });
+        console.log("Ugoira Downloader is running on jQuery version: " + myVal.jquery);
     }
 
     function isCache(illustrationID) {
