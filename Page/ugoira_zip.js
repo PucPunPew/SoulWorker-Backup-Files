@@ -284,9 +284,17 @@
         });
     }
     refreshDownloadPanel(getIllustrationID());
+    let lastIllustID = null;
     $$$(window).on("popstate", function (e) {
         console.log(e);
+    }).on("load", function (e) {
+        let illustID = getIllustrationID();
+        if (illustID !== lastIllustID) {
+            illustID = lastIllustID;
+            refreshDownloadPanel(illustID);
+        }
     });
+    return;
     let myTarget = document.querySelector("#root main");
     if (myTarget) {
         let lastIllustID = null;
