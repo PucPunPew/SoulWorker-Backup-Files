@@ -119,7 +119,7 @@
     }
     var $downloadPanel = $$$(downloadPanel);
 
-    function refreshDownloadPanel(illustID) {
+    async function refreshDownloadPanel(illustID) {
         // var illustID = getIllustrationID();
         if (!illustID) {
             $downloadPanel.empty();
