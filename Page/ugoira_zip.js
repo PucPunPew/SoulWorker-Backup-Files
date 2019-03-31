@@ -50,15 +50,17 @@
         myJquery = await (new Promise(function (resolve, reject) {
             var script = document.createElement('script');
             script.onload = function () {
-                resolve(w.jQuery.noConflict());
+                resolve(jQuery.noConflict());
             };
             script.src = "https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js";
             document.head.appendChild(script);
         }));
+    } else {
+        myJquery = w.jQuery;
     }
 
     if (!("$$$" in w)) {
-        let myVal = myJquery || w.jQuery.noConflict();
+        let myVal = myJquery;
         Object.defineProperty(w, "$$$", {
             value: myVal,
             writable: false,
@@ -95,7 +97,7 @@
     });
     */
     //img-container
-    var cssStyle = `.ugoira-downloader-ui{position:fixed;top:50%;left:10px;transform:translateY(-50%);background-color:rgba(0,0,0,.5)!important}.ugoira-downloader-ui button{display:block;border-radius:30px padding: 10px}`;
+    var cssStyle = `.ugoira-downloader-ui{position:fixed;top:50%;left:10px;transform:translateY(-50%);background-color:rgba(0,0,0,.5)!important}.ugoira-downloader-ui a{display:block;border-radius:30px padding: 10px}`;
 
     var downloadPanel = document.querySelector(".ugoira-downloader-ui"),
         isInit = (downloadPanel ? true : false);
@@ -120,11 +122,11 @@
     var illustID = getIllustrationID();
     if (!illustID) {
         $downloadPanel.empty();
-        $downloadPanel.html("Ugoira Download: Error [0]: Cannot fetch illustration ID from URL");
+        $downloadPanel.text("Ugoira Download: Error [0]: Cannot fetch illustration ID from URL");
         return;
     }
     $downloadPanel.empty();
-    $downloadPanel.html("Ugoira Download: Fetching illustration info");
+    $downloadPanel.text("Ugoira Download: Fetching illustration info");
 
     var myCachedObject = getCache(illustID);
     if (!myCachedObject) {
@@ -144,7 +146,7 @@
             });
         } catch (err) {
             $downloadPanel.empty();
-            $downloadPanel.html("Ugoira Download: Error [1]: " + err);
+            $downloadPanel.text("Ugoira Download: Error [1]: " + err);
             return;
         }
     }
@@ -197,7 +199,7 @@
             return result;
         })()].forEach(function (buttonData) {
             var btnTextName = (buttonData.isOriginal ? "Original Resolution" : "Normal Resolution");
-            $downloadPanel.append($$$("<a>").attr("type", "button").html("> Download " + btnTextName + " <").one("click", function (e) {
+            $downloadPanel.append($$$("<a>").attr("type", "button").text("> Download " + btnTextName + " <").one("click", function (e) {
                 e.preventDefault();
 
                 var myself = $$$(this),
@@ -206,9 +208,9 @@
 
                 if (buttonData.isCompleted) {
                     myself.attr("href", buttonData.data).attr("download", savename);
-                    myself.html("> Save " + btnTextName + " <");
+                    myself.text("> Save " + btnTextName + " <");
                 } else {
-                    myself.html("> Downloading " + btnTextName + " <");
+                    myself.text("> Downloading " + btnTextName + " <");
                     fetch(buttonData.data).then(function (response) {
                         if (response.ok) {
                             response.arrayBuffer().then(function (arrayBuffer) {
@@ -236,21 +238,21 @@
                                             });
                                         }
                                         myself.attr("href", myObjectUrl).attr("download", savename);
-                                        myself.html("> Save " + btnTextName + " <");
+                                        myself.text("> Save " + btnTextName + " <");
                                     }).catch(function (reason) {
-                                        myself.html("> Error [5]: " + reason + " <");
+                                        myself.text("> Error [5]: " + reason + " <");
                                     });
                                 }).catch(function (reason) {
-                                    myself.html("> Error [4]: " + reason + " <");
+                                    myself.text("> Error [4]: " + reason + " <");
                                 });
                             }).catch(function (reason) {
-                                myself.html("> Error [3]: " + reason + " <");
+                                myself.text("> Error [3]: " + reason + " <");
                             });
                         } else {
-                            myself.html("> Error [2]: " + response.statusText + " <");
+                            myself.text("> Error [2]: " + response.statusText + " <");
                         }
                     }).catch(function (reason) {
-                        myself.html("> Error [1]: " + reason + " <");
+                        myself.text("> Error [1]: " + reason + " <");
                     });
                 }
             }));
@@ -258,6 +260,6 @@
 
     }).catch(function (err) {
         $downloadPanel.empty();
-        $downloadPanel.html("Ugoira Download: Error [2]: " + err);
+        $downloadPanel.text("Ugoira Download: Error [2]: " + err);
     });
 })(window);
