@@ -265,8 +265,13 @@
                                             myself.css("cursor", "default");
                                         });
                                     } else {
-                                        myself.text("> Error [2]: " + response.statusText + " <");
-                                        myself.css("cursor", "default");
+                                        if (response.status === 404) {
+                                            myself.text("> Error [2]: Not a valid ugoira. Are you sure the current page is showing an ugoira image? <");
+                                            myself.css("cursor", "default");
+                                        } else {
+                                            myself.text("> Error [2]: " + response.statusText + " <");
+                                            myself.css("cursor", "default");
+                                        }
                                     }
                                 }).catch(function (reason) {
                                     myself.text("> Error [1]: " + reason + " <");
@@ -276,7 +281,6 @@
                         }));
                     }
                 });
-
             }).catch(function (err) {
                 $downloadPanel.empty();
                 $downloadPanel.text("Ugoira Download: Error [2]: " + err);
