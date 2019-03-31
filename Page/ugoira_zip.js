@@ -65,11 +65,7 @@
             configurable: false,
             enumerable: true
         });
-        console.log("Ugoira Downloader is running on jQuery version: " + myVal.jquery);
-    }
-
-    function isCache(illustrationID) {
-        return (myCacheStorage.getItem("ugoiradownload_" + illustrationID) !== undefined);
+        console.log("Ugoira Downloader is running on jQuery version: " + myVal.fn.jquery);
     }
 
     function getCache(illustrationID) {
