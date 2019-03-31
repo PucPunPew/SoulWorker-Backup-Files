@@ -1,5 +1,5 @@
-(async function (w) {
-    let myCacheStorage = w.sessionStorage;
+(async function () {
+    let myCacheStorage = window.sessionStorage;
     function importJS(link) {
         var script = document.createElement("script"),
             returnResult = new Promise(function (resolve, reject) {
@@ -12,7 +12,7 @@
         return returnResult;
     }
     function getIllustrationID() {
-        return (new URLSearchParams(w.location.search)).get("illust_id");
+        return (new URLSearchParams(window.location.search)).get("illust_id");
     }
     function ___getIllustrationData(url) {
         return (new Promise(function (resolve, reject) {
@@ -46,7 +46,7 @@
     }
 
     var myJquery = null;
-    if (!("jQuery" in w)) {
+    if (!("jQuery" in window)) {
         myJquery = await (new Promise(function (resolve, reject) {
             var script = document.createElement('script');
             script.onload = function () {
@@ -56,12 +56,12 @@
             document.head.appendChild(script);
         }));
     } else {
-        myJquery = w.jQuery;
+        myJquery = window.jQuery;
     }
 
-    if (!("$$$" in w)) {
+    if (!("$$$" in window)) {
         let myVal = myJquery;
-        Object.defineProperty(w, "$$$", {
+        Object.defineProperty(window, "$$$", {
             value: myVal,
             writable: false,
             configurable: false,
