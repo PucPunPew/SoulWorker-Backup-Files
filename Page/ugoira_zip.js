@@ -45,8 +45,7 @@
         return ___getIllustrationData("/ajax/illust/" + illustrationID + "/ugoira_meta");
     }
 
-    if (!("jQuery" in w) || typeof (jQuery) === "undefined") {
-        w.jQuery = "";
+    if (!("$$$" in w) || typeof (jQuery) === "undefined") {
         var myJquery = await (new Promise(function (resolve, reject) {
             var script = document.createElement('script');
             script.onload = function () {
