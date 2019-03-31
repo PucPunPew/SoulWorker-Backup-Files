@@ -277,14 +277,21 @@
         });
     }
     refreshDownloadPanel(getIllustrationID());
-    let lastIllustID = null;
-    $$$(window).on("popstate", function (e) {
-        // e.target.document.location
-        let illustID = (new URLSearchParams(e.target.document.location)).get("illust_id");
-        // console.log("location: " + document.location + ", state: " + JSON.stringify(e.state));
-        if (illustID !== lastIllustID) {
-            illustID = lastIllustID;
-            refreshDownloadPanel(illustID);
-        }
-    });
-})(window);
+    let myTarget = document.querySelector("#root main");
+    if (myTarget) {
+        let lastIllustID = null;
+        (new MutationObserver(function (records) {
+            setTimeout(function () {
+                let illustID = (new URLSearchParams(document.location)).get("illust_id");
+                if (illustID !== lastIllustID) {
+                    illustID = lastIllustID;
+                    refreshDownloadPanel(illustID);
+                }
+            }, 100);
+        })).observe(myTarget, {
+            childList: true,
+            attributes: false,
+            subtree: true
+        });
+    }
+})();
