@@ -79,8 +79,8 @@
     }
 
     function setCache(illustrationID, cacheData, overwrite = false) {
-        if (!overwrite && isCache(illustrationID)) {
-            let myresult = Object.assign(getCache(illustrationID), cacheData);
+        if (!overwrite) {
+            let myresult = Object.assign(getCache(illustrationID) || {}, cacheData);
             myCacheStorage.setItem("ugoiradownload_" + illustrationID, JSON.stringify(myresult));
             return myresult;
         } else {
