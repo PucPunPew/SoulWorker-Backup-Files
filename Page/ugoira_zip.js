@@ -97,7 +97,7 @@
     });
     */
     //img-container
-    var cssStyle = `.ugoira-downloader-ui{position:fixed;top:50%;left:10px;transform:translateY(-50%);background-color:rgba(0,0,0,.5)!important}.ugoira-downloader-ui a{display:block;border-radius:30px;padding:10px;-webkit-appearance:button;-moz-appearance:button;appearance:button;}`;
+    var cssStyle = `.ugoira-downloader-ui{position:fixed;top:50%;left:10px;transform:translateY(-50%);background-color:rgba(0,0,0,.5)!important;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px}.ugoira-downloader-ui a{display:block;border-radius:30px;padding:10px;margin-top: 5px;}`;
 
     var downloadPanel = document.querySelector(".ugoira-downloader-ui"),
         isInit = (downloadPanel ? true : false);
@@ -175,6 +175,8 @@
     }
 
     awaitingDummy.then(function (json) {
+        $downloadPanel.empty();
+        $downloadPanel.text("Ugoira Download:");
         [(function () {
             let result = {
                 isOriginal: false,
