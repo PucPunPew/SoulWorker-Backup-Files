@@ -12,7 +12,18 @@
         return returnResult;
     }
     function getIllustrationID() {
-        return (new URLSearchParams(location.search)).get("illust_id");
+        let theId = (new URLSearchParams(location.search)).get("illust_id");
+        if (!theId) {
+            if (location.pathname.includes("/artworks")) {
+                let theSplit = location.pathname.split("/");
+                theSplit.forEach(function (val, index, arr) {
+                    if (val === "artworks") {
+                        theId = arr[++index];
+                    }
+                });
+            }
+        }
+        return theId;
     }
     function ___getIllustrationData(url) {
         return (new Promise(function (resolve, reject) {
